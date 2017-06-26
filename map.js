@@ -1,4 +1,9 @@
-var mymap = L.map('mapid').setView([51.505, -0.09], 13)
+var mymap = L.map('mapid').setView([51.505, -0.09], 16);
+var latlng = [51.505, -0.09];
+// var popup = L.popup()
+//     .setLatLng(latlng)
+//     .setContent('<p>Hello world!<br />This is a nice popup.</p>')
+//     .openOn(mymap);
 
 L.tileLayer('https://api.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
@@ -8,38 +13,95 @@ L.tileLayer('https://api.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={access
 }).addTo(mymap);
 
 
-var ourCustomControl = L.Control.extend({
+var pinButtonControl = L.Control.extend({
 
   options: {
     position: 'topright' 
     //control position - allowed: 'topleft', 'topright', 'bottomleft', 'bottomright'
   },
   onAdd: function (map) {
-    var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
-
-    container.style.backgroundColor = 'white';
+    var pinButton = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom pin-button');
+    pinButton.title = "drop a pin";
+    pinButton.style.backgroundColor = 'white';
     //container.style.backgroundImage
-    container.style.width = '30px';
-    container.style.height = '30px';
+    pinButton.style.width = '30px';
+    pinButton.style.height = '30px';
+
+    
+
     
     var placing_pin = false;
 
     var getcoord = function(e) {
-      if (placing_pin && !e.originalEvent.target.classList.contains("leaflet-control-custom") ){
-            console.log("Lat, Lon : " + e.latlng.lat + ", " + e.latlng.lng);
+      if (placing_pin && !e.originalEvent.target.classList.contains("pin-button") ){
+            console.log("Lat, Lon : " + e.latlng + ", " + e.latlng.lng);
             L.marker([e.latlng.lat,e.latlng.lng]).addTo(map);
             placing_pin = false;
       }
     };
     map.on('click', getcoord);
 
-    container.onclick = function(){
+    pinButton.onclick = function(){
        placing_pin = !placing_pin;
+       
     };
-    return container;
+    return pinButton;
   }
 
 });
 
-mymap.addControl(new ourCustomControl());
+mymap.addControl(new pinButtonControl());
+
+
+var polygonButtonControl = L.Control.extend({
+
+  options: {
+    position: 'topright' 
+    //control position - allowed: 'topleft', 'topright', 'bottomleft', 'bottomright'
+  },
+  onAdd: function (map) {
+    var polygonButton = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom polygon-button');
+
+    polygonButton.style.backgroundColor = 'white';
+    //container.style.backgroundImage
+    polygonButton.style.width = '30px';
+    polygonButton.style.height = '30px';
+    
+    var drawing = false;
+    var myIcon = L.icon({
+      iconUrl: 'red-pin.png',
+      iconSize: [38, 95],
+      iconAnchor: [22, 94],
+      popupAnchor: [-3, -76],
+      });
+    var points = []
+    var markerGroup = L.layerGroup().addTo(map);
+    
+    var addPoint = function(e){
+      if (drawing && !e.originalEvent.target.classList.contains("polygon-button") ){
+        console.log("Lat, Lon : " + e.latlng.lat + ", " + e.latlng.lng);
+        L.marker([e.latlng.lat,e.latlng.lng],{icon: myIcon}).addTo(markerGroup);
+        points.push([e.latlng.lat,e.latlng.lng]);
+      }
+    }
+
+    var removePoints = function (e){
+     if (!drawing && e.originalEvent.target.classList.contains("polygon-button") ){
+      map.removeLayer(markerGroup);
+      var polygon = L.polygon(points).addTo(map);
+      points = [];
+      markerGroup = L.layerGroup().addTo(map);
+     }
+    }
+    map.on('click', addPoint);
+    map.on('click', removePoints);
+    polygonButton.onclick = function(){
+      drawing = !drawing;
+    };
+    return polygonButton;
+  }
+
+});
+
+mymap.addControl(new polygonButtonControl());
 

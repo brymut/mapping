@@ -1,0 +1,6 @@
+1|James|{  "type": "FeatureCollection",  "features": [    {      "type": "Feature",      "properties": {          "name": "Home Address"      },      "geometry": {        "type": "Point",        "coordinates": [          -4.275140762329102,          55.87020653108794        ]      }    },    {      "type": "Feature",      "properties": {          "name": "Work Address"      },      "geometry": {        "type": "Point",        "coordinates": [          -4.263811111450195,          55.86259698254748        ]      }    }  ]}|2
+2|Heather|{  "type": "FeatureCollection",  "features": [    {      "type": "Feature",      "properties": {          "name": "Home Address"      },      "geometry": {        "type": "Point",        "coordinates": [          -4.279775619506836,          55.8694360117336        ]      }    },    {      "type": "Feature",      "properties": {          "name": "Work Address"      },      "geometry": {        "type": "Point",        "coordinates": [          -4.248790740966797,          55.85869530680905        ]      }    }  ]}|1
+
+
+
+
